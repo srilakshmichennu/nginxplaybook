@@ -1,0 +1,36 @@
+## Credits to John Lieske - https://www.ansible.com/blog/getting-started-writing-your-first-playbook
+---
+- name: Install nginx
+  hosts: localhost 
+  become: true
+
+  tasks:
+  - name: Install rpm  packages
+    become: yes
+    become_user: root
+    yum:
+      name: "http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm"
+      state: latest
+      update_cache: yes
+  - name: Install nginx
+    become: yes
+    become_user: root
+    yum:
+      name: nginx
+      state: present
+  - name: copy file to configuration folder 
+    become: yes
+    become_user: root
+    copy:
+      src: website.conf
+      dest: /etc/nginx/website.conf
+  - name: Copy file to html folder
+    copy:
+      src: index.html
+      dest: /usr/share/nginx/html/ 
+  - name: Start NGiNX
+    become: yes
+    become_user: root
+    service:
+      name: nginx
+      state: started
